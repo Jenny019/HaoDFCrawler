@@ -18,15 +18,18 @@ import enums.ProvinceEnum;
 import models.Department;
 import models.Doctor;
 import models.Hospital;
+import utils.ExcelUtil;
 
 public class HospitalCrawler {
 	private static final String HOSPITAL_LIST_URL = "http://www.haodf.com/yiyuan/%s/list.htm?category=%s";
 	private static final String HOSPITAL_DETAIL_URL = "http://www.haodf.com";
 
-	private static ArrayList<Hospital> getHospitalList() {
-		ArrayList<Hospital> list = new ArrayList<>();
+	private static HashMap<String, ArrayList<Hospital>> getHospitalList() {
+		HashMap<String, ArrayList<Hospital>> map = new HashMap<>();
 
 		provinceLoop: for (ProvinceEnum p : ProvinceEnum.values()) {
+			ArrayList<Hospital> list = new ArrayList<>();
+			
 			categoryLoop: for (HospitalCategoryEnum c : HospitalCategoryEnum.values()) {
 				String hospitalListUrl = String.format(HOSPITAL_LIST_URL, p.getValue(), c.getValue());
 				try {
@@ -52,8 +55,7 @@ public class HospitalCrawler {
 							getHospitalDetail(h);
 
 							list.add(h);
-
-							break provinceLoop;
+							break categoryLoop;
 						}
 					}
 				} catch (MalformedURLException e) {
@@ -62,8 +64,11 @@ public class HospitalCrawler {
 					e.printStackTrace();
 				}
 			}
+			
+			map.put(p.getLabel(), list);
+			break provinceLoop;
 		}
-		return list;
+		return map;
 	}
 
 	private static Hospital getHospitalDetail(Hospital hospital) {
@@ -151,7 +156,7 @@ public class HospitalCrawler {
 				dept.setCount(Integer.parseInt(count));
 
 				// 获取该部门下的所有医生信息
-				ArrayList<Doctor> doctorList = getDoctorList(dept);
+				ArrayList<Doctor> doctorList = getDoctorListForSingleDepartment(dept);
 				deptMap.put(dept, doctorList);
 				
 				break secondDepartmentLoop;
@@ -162,7 +167,7 @@ public class HospitalCrawler {
 		}
 	}
 
-	private static ArrayList<Doctor> getDoctorList(Department dept) {
+	private static ArrayList<Doctor> getDoctorListForSingleDepartment(Department dept) {
 		ArrayList<Doctor> list = new ArrayList<>();
 
 		String baseUrl = dept.getUrl();
@@ -219,7 +224,7 @@ public class HospitalCrawler {
 	}
 
 	public static void main(String[] args) {
-		ArrayList<Hospital> list = getHospitalList();
-		System.out.println(list);
+		HashMap<String, ArrayList<Hospital>> map = getHospitalList();
+		ExcelUtil.writeDataToExcel(map);
 	}
 }

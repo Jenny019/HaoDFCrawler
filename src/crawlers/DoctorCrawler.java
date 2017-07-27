@@ -32,10 +32,10 @@ public class DoctorCrawler {
 			// System.out.println(doctorInfo_first);
 			int doctorInfo_first_rowCount = doctorInfo_first.getElementsByTag("tr").size();
 
-			//Elements remarkEle = doctorInfo_first_rowCount == 4
-			//		? doctorInfo_first.select("tr:nth-child(1) td:nth-child(3) h2")
-			//		: doctorInfo_first.select("tr:nth-child(2) td:nth-child(3) h2");
-			//String remark = remarkEle.first().text().replace("&nbsp;", "");
+			// Elements remarkEle = doctorInfo_first_rowCount == 4
+			// ? doctorInfo_first.select("tr:nth-child(1) td:nth-child(3) h2")
+			// : doctorInfo_first.select("tr:nth-child(2) td:nth-child(3) h2");
+			// String remark = remarkEle.first().text().replace("&nbsp;", "");
 
 			Elements titleEle = doctorInfo_first_rowCount == 4
 					? doctorInfo_first.select("tr:nth-child(2) td:nth-child(3)")
@@ -55,7 +55,7 @@ public class DoctorCrawler {
 
 			String jobExp = jobExpEle.isEmpty() ? "" : jobExpEle.first().ownText().trim();
 
-			//doctor.setRemark(remark);
+			// doctor.setRemark(remark);
 			doctor.setTitle(title);
 			doctor.setAdvantage(advantage);
 			doctor.setJobExp(jobExp);
@@ -64,13 +64,16 @@ public class DoctorCrawler {
 			if (doctorInfo_second.isEmpty()) {
 				doctorInfo_second = doctorPage.select("#bp_doctor_getvote .doctor_panel .middletr table");
 			}
-			
-			//Element clinicalAnchors = doctorInfo_second.select("td").first();
-			//String clinicalExp = clinicalAnchors.ownText();
-			//doctor.setClinicalExp(clinicalExp);
-			Element websiteAnchor = doctorInfo_first.nextElementSibling().nextElementSibling().getElementsByTag("a").first();
-			String website = websiteAnchor.attr("href");
-			doctor.setWebsite(website);
+
+			// Element clinicalAnchors = doctorInfo_second.select("td").first();
+			// String clinicalExp = clinicalAnchors.ownText();
+			// doctor.setClinicalExp(clinicalExp);
+			Element websiteAnchor = doctorInfo_first.nextElementSibling().nextElementSibling().getElementsByTag("a")
+					.first();
+			if (null != websiteAnchor) {
+				String website = websiteAnchor.attr("href");
+				doctor.setWebsite(website);
+			}
 		} catch (Exception ee) {
 			ee.printStackTrace();
 		} finally {

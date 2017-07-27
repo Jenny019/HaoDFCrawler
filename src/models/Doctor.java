@@ -1,15 +1,14 @@
 package models;
 
 public class Doctor {
-	private String name;
-	private String hospital;
-	private String department;
-	private String title;
-	private String advantage;
-	private String jobExp;
-	private String website;
-	private String remark;
-	private String url;
+	protected String name;
+	protected String hospital;
+	protected String title;
+	protected String advantage;
+	protected String jobExp;
+	protected String website;
+	protected String remark;
+	protected String url;
 
 	public String getName() {
 		return name;
@@ -25,14 +24,6 @@ public class Doctor {
 
 	public void setHospital(String hospital) {
 		this.hospital = hospital;
-	}
-
-	public String getDepartment() {
-		return department;
-	}
-
-	public void setDepartment(String department) {
-		this.department = department;
 	}
 
 	public String getTitle() {

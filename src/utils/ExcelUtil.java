@@ -3,6 +3,7 @@ package utils;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -15,30 +16,33 @@ import models.Hospital;
 
 public class ExcelUtil {
 
-	public static void writeDataToExcel(ArrayList<Hospital> hospitals) {
+	public static void writeDataToExcel(HashMap<String, ArrayList<Hospital>> map) {
 		HSSFWorkbook wb = new HSSFWorkbook();
-		for (Hospital h : hospitals) {
-			writeSingleHospitalToExcel(wb, h);
+		for (String p: map.keySet()) {
+			Sheet sheet = wb.createSheet(p);
+			for (Hospital h: map.get(p)) {
+				writeSingleHospitalToExcel(sheet, h);
+			}
 		}
 
 		FileOutputStream out = null;
 		try {
-			out = new FileOutputStream("data.xls");
+			out = new FileOutputStream("data_by_hospital.xls");
 			wb.write(out);
 		} catch (IOException e) {
-			System.out.println(e.toString());
+			e.printStackTrace();
 		} finally {
 			try {
 				out.flush();
 				out.close();
+				wb.close();
 			} catch (IOException e) {
-				System.out.println(e.toString());
+				e.printStackTrace();
 			}
 		}
 	}
 
-	private static void writeSingleHospitalToExcel(HSSFWorkbook wb, Hospital h) {
-		Sheet sheet1 = wb.createSheet(h.getProvince());
+	private static void writeSingleHospitalToExcel(Sheet sheet1, Hospital h) {
 		Row header = sheet1.createRow(0);
 		Cell cell0 = header.createCell(0);
 		cell0.setCellValue("地区");
@@ -58,23 +62,23 @@ public class ExcelUtil {
 		cell7.setCellValue("科室列表 一级");
 		Cell cell8 = header.createCell(8);
 		cell8.setCellValue("科室列表 二级");
-		Cell cell9 = header.createCell(7);
+		Cell cell9 = header.createCell(9);
 		cell9.setCellValue("科室介绍");
-		Cell cell10 = header.createCell(7);
+		Cell cell10 = header.createCell(10);
 		cell10.setCellValue("医生");
-		Cell cell11 = header.createCell(7);
+		Cell cell11 = header.createCell(11);
 		cell11.setCellValue("职称");
-		Cell cell12 = header.createCell(7);
+		Cell cell12 = header.createCell(12);
 		cell12.setCellValue("擅长");
-		Cell cell13 = header.createCell(7);
+		Cell cell13 = header.createCell(13);
 		cell13.setCellValue("执业经历");
-		Cell cell14 = header.createCell(7);
+		Cell cell14 = header.createCell(14);
 		cell14.setCellValue("个人网站");
 
-		writeExcelRow(h, sheet1);
+		writeExcelRow(sheet1, h);
 	}
 
-	private static void writeExcelRow(Hospital h, Sheet sheet1) {
+	private static void writeExcelRow(Sheet sheet1, Hospital h) {
 		int rowNum = 1;
 
 		for (String topDept : h.getMap().keySet()) {
@@ -116,6 +120,31 @@ public class ExcelUtil {
 				}
 			}
 		}
+	}
+	
+	public static void writeDataToExcel(HashMap<String, ArrayList<Hospital>> map) {
+		HSSFWorkbook wb = new HSSFWorkbook();
+		for (String p: map.keySet()) {
+			Sheet sheet = wb.createSheet(p);
+			for (Hospital h: map.get(p)) {
+				writeSingleHospitalToExcel(sheet, h);
+			}
+		}
 
+		FileOutputStream out = null;
+		try {
+			out = new FileOutputStream("data_by_disease.xls");
+			wb.write(out);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				out.flush();
+				out.close();
+				wb.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
